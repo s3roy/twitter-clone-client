@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.11.1",
+    "@tanstack/react-query": "^4.32.6",
+    "@tanstack/react-query-devtools": "^4.32.6",
     "@types/node": "20.4.9",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
