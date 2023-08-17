@@ -129,7 +129,7 @@ export default function Home() {
           </div>
           {user && (
             <div className="mt-5 absolute bottom-5 flex gap-2 items-center bg-slate-800 rounded-full px-3 py-2">
-              {user && user.profileImageURL && (
+              {user?.profileImageURL && (
                 <Image
                   src={user?.profileImageURL}
                   alt="user-image"
