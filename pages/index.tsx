@@ -9,7 +9,7 @@ import {
 import FeedCard from '@/components/feedcard/FeedCard';
 import { SlOptions } from 'react-icons/sl';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { verifyUserGoogleTokenQuery } from '@/graphql/query/user';
@@ -17,6 +17,8 @@ import { useCurrentUser } from '@/hooks/user';
 import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { graphqlClient } from '@/clients/api';
+import { useCreateTweet, useGetAllTweets } from '@/hooks/tweet';
+import { Tweet } from '@/gql/graphql';
 
 interface TwitterSidebarButton {
   title: string;
@@ -60,7 +62,11 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 
 export default function Home() {
   const { user } = useCurrentUser();
+  const { tweets = [] } = useGetAllTweets();
+  const { mutate } = useCreateTweet();
   const queryClient = useQueryClient();
+
+  const [content, setContent] = useState<string>('');
 
   const handleSelectImage = useCallback(() => {
     const input = document.createElement('input');
@@ -90,6 +96,12 @@ export default function Home() {
     [queryClient]
   );
 
+  const handleCreateTweet = useCallback(() => {
+    mutate({
+      content,
+    });
+  }, [content, mutate]);
+
   return (
     <div>
       <div className="grid grid-cols-12 h-screen w-screen px-56">
@@ -117,9 +129,9 @@ export default function Home() {
           </div>
           {user && (
             <div className="mt-5 absolute bottom-5 flex gap-2 items-center bg-slate-800 rounded-full px-3 py-2">
-              {user && user.profileImageUrl && (
+              {user && user.profileImageURL && (
                 <Image
-                  src={user?.profileImageUrl}
+                  src={user?.profileImageURL}
                   alt="user-image"
                   height={50}
                   width={50}
@@ -137,10 +149,10 @@ export default function Home() {
             <div className="border border-r-0 border-l-0 border-b-0 border-gray-600 p-5 hover:bg-slate-900 transition-all cursor-pointer">
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-1">
-                  {user?.profileImageUrl && (
+                  {user?.profileImageURL && (
                     <Image
                       className="rounded-full"
-                      src={user?.profileImageUrl}
+                      src={user?.profileImageURL}
                       alt="user-image"
                       height={50}
                       width={50}
@@ -150,6 +162,8 @@ export default function Home() {
 
                 <div className="col-span-11">
                   <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
                     className="w-full bg-transparent text-xl px-3 border-b border-slate-700"
                     placeholder="What's happening?"
                     rows={5}
@@ -159,7 +173,10 @@ export default function Home() {
                       onClick={handleSelectImage}
                       className="text-xl"
                     />
-                    <button className="bg-[#1d9bf0] font-semibold rounded-full py-2 px-4 text-sm">
+                    <button
+                      onClick={handleCreateTweet}
+                      className="bg-[#1d9bf0] font-semibold rounded-full py-2 px-4 text-sm"
+                    >
                       Tweet
                     </button>
                   </div>
@@ -168,15 +185,9 @@ export default function Home() {
             </div>
           </div>
 
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
+          {tweets?.map((tweet) => (
+            <FeedCard key={tweet?.id} data={tweet as Tweet} />
+          ))}
         </div>
         <div className="col-span-3 p-5">
           {user && (
