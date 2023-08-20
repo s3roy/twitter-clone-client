@@ -1,11 +1,16 @@
 import Twitterlayout from '@/components/feedcard/Layout/Twitterlayout';
 import type { NextPage } from 'next';
+import { BsArrowLeftShort } from 'react-icons/bs';
 
 const UserProfilePage: NextPage = () => {
   return (
     <div>
       <Twitterlayout>
-        <h1>Profile Page</h1>
+        <div>
+          <nav>
+            <BsArrowLeftShort className="text-4xl" />
+          </nav>
+        </div>
       </Twitterlayout>
     </div>
   );
